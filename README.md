@@ -1,1 +1,287 @@
 # My-city-is-ECO-city
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoCity: พลังงานสร้างอนาคต (Hardcore Mode)</title>
+    <!-- ฟอนต์ Prompt จาก Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Prompt', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #2c3e50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            position: relative;
+        }
+        .container {
+            width: 100%;
+            max-width: 950px;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s ease;
+        }
+
+        h1 { 
+            color: #c0392b; 
+            margin-bottom: 5px; 
+            font-weight: 600;
+            font-size: 28px;
+            text-align: center;
+        }
+        .subtitle {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .timer-bar {
+            background: #c0392b;
+            color: white;
+            text-align: center;
+            padding: 8px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            border: 1px solid #e9ecef;
+        }
+        .stat-box {
+            text-align: center;
+            flex: 1;
+        }
+        .stat-box span {
+            display: block;
+            font-size: 22px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 5px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            padding: 20px;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            background: #fafbfc;
+            display: flex;
+            flex-direction: column;
+        }
+        .panel h3 {
+            margin-top: 0;
+            font-size: 18px;
+            color: #34495e;
+        }
+        .button-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .button-full {
+            display: grid;
+            grid-template-columns: 1fr;
+            margin-bottom: 10px;
+        }
+        button {
+            font-family: 'Prompt', sans-serif;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        button:hover { background-color: #219653; transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
+        button.coal { background-color: #e74c3c; }
+        button.coal:hover { background-color: #c0392b; }
+        button.filter-btn { background-color: #2980b9; }
+        button.filter-btn:hover { background-color: #2471a3; }
+        button.credit-btn { background-color: #8e44ad; }
+        button.credit-btn:hover { background-color: #732d91; }
+        button:disabled { background-color: #bdc3c7; cursor: not-allowed; transform: none; box-shadow: none; }
+        
+        .log {
+            background: #1e1e1e;
+            color: #4af626;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: left;
+            font-family: 'Courier New', Courier, monospace;
+            flex-grow: 1;
+            height: 250px;
+            overflow-y: auto;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        #obstacle-banner {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 15px;
+            text-align: center;
+            z-index: 1000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            animation: fadeInOut 3s ease forwards;
+        }
+        #obstacle-icon {
+            font-size: 50px;
+            margin-bottom: 10px;
+        }
+        #obstacle-text {
+            font-size: 20px;
+            font-weight: 500;
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translate(-50%, -40%); }
+            15% { opacity: 1; transform: translate(-50%, -50%); }
+            85% { opacity: 1; transform: translate(-50%, -50%); }
+            100% { opacity: 0; transform: translate(-50%, -60%); }
+        }
+
+        .modal-overlay {
+            display: flex;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            animation: popUp 0.3s ease;
+        }
+        @keyframes popUp {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .modal-content h2 { font-size: 28px; margin-top: 0; color: #c0392b; }
+        .modal-content p { color: #666; font-size: 15px; margin-bottom: 25px; line-height: 1.6; }
+        .modal-content button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            background-color: #c0392b;
+        }
+        .modal-content button:hover { background-color: #a93226; }
+    </style>
+</head>
+<body>
+
+    <!-- หน้าต่างต้อนรับท่านนายกตอนเริ่มเกม -->
+    <div id="welcome-screen" class="modal-overlay">
+        <div class="modal-content">
+            <h2>🔥 โหมดท้าทายพิเศษ!</h2>
+            <p>ยินดีต้อนรับสู่ภารกิจด่วน <b>3 นาที</b><br><br><b>เป้าหมาย:</b> สร้างพลังงานให้ถึง <b>1000 MW</b><br><b>ข้อแม้เหล็ก:</b> มลพิษห้ามเกิน <b>10%</b> เด็ดขาด! (ถ้าเกินหรือหมดเวลาแล้วไม่ถึง 1000 MW จะแพ้ทันที)</p>
+            <button onclick="startAppGame()">🚀 ลุยเลย!</button>
+        </div>
+    </div>
+
+    <div id="obstacle-banner">
+        <div id="obstacle-icon">⚠️</div>
+        <div id="obstacle-text">เกิดอุปสรรคขึ้นในเมือง!</div>
+    </div>
+
+    <!-- หน้าต่างจบเกม -->
+    <div id="game-over-screen" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2 id="modal-title" style="color: #e74c3c;">คุณแพ้แล้ว</h2>
+            <p id="modal-desc">เมืองของคุณไม่สามารถไปต่อได้...</p>
+            <button onclick="restartGame()" style="background-color: #2c3e50;">🔄 เล่นใหม่อีกครั้ง</button>
+        </div>
+    </div>
+
+    <div class="container" id="game-container">
+        <h1>⚡ EcoCity: Hardcore Mode</h1>
+        <div class="subtitle">เป้าหมาย: 1000 MW ใน 3 นาที | มลพิษห้ามเกิน 10%</div>
+
+        <!-- แถบแสดงเวลาที่เหลือ -->
+        <div class="timer-bar">
+            ⏱️ เวลาที่เหลือ: <span id="timer-display">03:00</span> นาที
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                💰 งบประมาณ
+                <span id="money" style="color: #27ae60;">1500 G</span>
+            </div>
+            <div class="stat-box">
+                ⚡ พลังงานไฟฟ้า
+                <span><span id="energy">0</span> / <span id="demand">100</span> MW</span>
+            </div>
+            <div class="stat-box">
+                ☁️ มลพิษ
+                <span id="pollution" style="color: #e67e22;">0%</span>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="panel">
+                <h3>🎛️ แผงควบคุมการสร้าง</h3>
+                <div class="button-group">
+                    <button id="btn-coal" class="coal" onclick="buildPlant('coal')">🔥 ถ่านหิน (150G)<br><small>+50MW | +15% มล.</small></button>
+                    <button id="btn-solar" onclick="buildPlant('solar')">☀️ โซลาร์ (200G)<br><small>+30MW | 0% มล.</small></button>
+                    <button id="btn-wind" onclick="buildPlant('wind')">🌬️ กังหันลม (180G)<br><small>+25MW | 0% มล.</small></button>
+                </div>
+                <div class="button-full">
+                    <button id="btn-filter" class="filter-btn" onclick="buildPlant('filter')">🌿 ระบบกรองคาร์บอน (400G)<br><small>ลดมลพิษ 10% | เสียพลังงาน -10MW</small></button>
+                </div>
+                <div class="button-full">
+                    <button id="btn-credit" class="credit-btn" onclick="buildPlant('credit')">💳 ซื้อ Credit มลพิษ (<span id="credit-cost">800</span>G)<br><small>ลดมลพิษ 50% | ราคาแพงขึ้นทุกครั้ง</small></button>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3>📜 บันทึกเหตุการณ์เมือง</h3>
+                <div id="log" class="log">[ระบบ] โหมดฮาร์ดคอร์เริ่มขึ้นแล้ว! เร่งมือผลิตพลังงานให้ถึง 1000 MW โดยคุมมลพิษไม่ให้เกิน 10% ให้ได้!</div>
+            </div>
+   
